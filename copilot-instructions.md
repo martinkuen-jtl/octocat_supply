@@ -24,6 +24,21 @@ OctoCAT Supply is a demo full‑stack TypeScript supply‑chain app (React + Exp
 - Keep foreign keys enabled and prefer parameterized queries.
 - Migrations live in `api/sql/migrations` and are executed in order; seed data lives in `api/sql/seed`.
 
+## Commit message style
+Use a short **title + description** format.
+
+**Format**
+- Title (subject): imperative mood, ~50 chars max, no trailing period
+- Blank line
+- Description (body): 1–3 sentences describing what changed + why (optional impact/risk)
+
+**Example**
+
+Add supplier search endpoint
+
+Expose /suppliers/search to filter suppliers by name and reduce client-side filtering.
+Includes validation and updates the OpenAPI spec.
+
 ## Coding conventions (what Copilot should follow)
 ### TypeScript
 - Prefer explicit types at module boundaries (API handlers, repository methods, exported functions).
