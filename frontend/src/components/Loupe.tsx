@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { LOUPE_CONFIG } from '../config/loupeConfig';
 
 interface LoupeProps {
@@ -7,6 +7,12 @@ interface LoupeProps {
   zoom?: number;
   /** Lens diameter in pixels. Defaults to VITE_LOUPE_SIZE or 220. */
   size?: number;
+  /**
+   * Changing this value triggers a snapshot rebuild. Pass the current
+   * route pathname (or `location.key`) so the snapshot refreshes on
+   * every navigation.
+   */
+  refreshKey?: string;
 }
 
 /**
@@ -22,10 +28,12 @@ export default function Loupe({
   visible,
   zoom = LOUPE_CONFIG.zoomFactor,
   size = LOUPE_CONFIG.lensSize,
+  refreshKey,
 }: LoupeProps) {
   const lensRef = useRef<HTMLDivElement>(null);
   const lensContentRef = useRef<HTMLDivElement>(null);
-  const snapshotCreated = useRef(false);
+  // Incremented (via RAF-throttled scroll listener) to trigger snapshot rebuild.
+  const [snapshotVersion, setSnapshotVersion] = useState(0);
 
   // Move lens and reposition the zoomed-content div on every mousemove.
   // Direct DOM writes avoid a React re-render on every frame.
@@ -61,19 +69,38 @@ export default function Loupe({
     return () => document.removeEventListener('mousemove', onMove);
   }, [visible, size]);
 
-  // Build a DOM snapshot when the loupe first becomes visible.
+  // Invalidate the snapshot on scroll so it is rebuilt at the new scroll
+  // position. We throttle via requestAnimationFrame to avoid rebuilding on
+  // every pixel change.
+  useEffect(() => {
+    if (!visible) {return;}
+
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        setSnapshotVersion((v) => v + 1);
+      });
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, [visible]);
+
+  // Build (or rebuild) a DOM snapshot whenever the loupe becomes visible,
+  // the route changes (refreshKey), or the page was scrolled (snapshotVersion).
   // We clone the entire #root element so all current styles and images
   // are preserved without any extra dependencies.
   useEffect(() => {
     if (!visible) {
-      snapshotCreated.current = false;
       if (lensContentRef.current) {
         lensContentRef.current.innerHTML = '';
       }
       return;
     }
-
-    if (snapshotCreated.current) {return;}
 
     const root = document.getElementById('root');
     const lensContent = lensContentRef.current;
@@ -98,8 +125,7 @@ export default function Loupe({
 
     lensContent.innerHTML = '';
     lensContent.appendChild(clone);
-    snapshotCreated.current = true;
-  }, [visible]);
+  }, [visible, refreshKey, snapshotVersion]);
 
   if (!visible) {return null;}
 
