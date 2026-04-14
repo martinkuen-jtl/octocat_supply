@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useLoupeContext } from '../context/LoupeContext';
 import { useState } from 'react';
 
 export default function Navigation() {
   const { isLoggedIn, isAdmin, logout } = useAuth();
   const { darkMode, toggleTheme } = useTheme();
+  const { visible: loupeVisible, toggleVisible: toggleLoupe } = useLoupeContext();
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
 
   return (
@@ -85,6 +87,57 @@ export default function Navigation() {
             </div>
           </div>
           <div className="flex items-center space-x-4">
+            {/* Loupe toggle button */}
+            <button
+              onClick={toggleLoupe}
+              aria-label={loupeVisible ? 'Loupe: On – click to turn off' : 'Loupe: Off – click to turn on'}
+              aria-pressed={loupeVisible}
+              data-loupe-toggle
+              className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium border transition-colors focus:outline-none focus:ring-2 focus:ring-primary ${
+                loupeVisible
+                  ? 'bg-primary text-white border-primary'
+                  : darkMode
+                    ? 'text-light border-gray-600 hover:border-primary hover:text-primary'
+                    : 'text-gray-600 border-gray-300 hover:border-primary hover:text-primary'
+              }`}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+              <span>Loupe: {loupeVisible ? 'On' : 'Off'}</span>
+            </button>
+            {/* Loupe settings link */}
+            <Link
+              to="/loupe"
+              aria-label="Loupe settings"
+              className="p-1 rounded-md text-xs text-gray-400 hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="3" />
+                <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+              </svg>
+            </Link>
             <button
               onClick={toggleTheme}
               className="p-2 rounded-full focus:outline-none transition-colors"
