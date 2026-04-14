@@ -121,13 +121,33 @@ Database defaults and env vars:
 
 ## 🔍 Loupe (Magnifier)
 
-Press **Alt+L** anywhere in the app to toggle an on-demand magnifying-glass overlay.
-The circular lens follows your cursor and zooms in on the surrounding page content.
-Press **Alt+L** again to hide it.
+The loupe is a circular magnifier that follows your cursor and zooms in on the surrounding page
+content.
 
-> The shortcut is intentionally skipped while focus is inside an `<input>` or `<textarea>` so it does not interfere with normal typing.
+### Activating the loupe
 
-### Configuration
+| Method | Action |
+|---|---|
+| **Button** | Click the **"Loupe: Off/On"** button in the navigation bar |
+| **Keyboard** | Press **Alt+L** anywhere in the app (not while a text field is focused) |
+
+> The `Alt+L` shortcut is intentionally skipped while focus is inside an `<input>` or `<textarea>` so it does not interfere with normal typing.
+
+### Settings page
+
+Navigate to **`/loupe`** (or click the ⚙ gear icon next to the Loupe button) to open the dedicated
+settings page where you can:
+
+- **Enable / disable** the loupe with a toggle switch
+- Adjust the **zoom factor** (1.5× – 5×)
+- Adjust the **lens size** (100 – 400 px)
+
+Settings are saved in `localStorage` and persist across browser sessions.
+
+### Build-time defaults
+
+You can override the initial defaults via environment variables (before the user saves their own
+settings):
 
 | Environment variable | Default | Description |
 |---|---|---|
