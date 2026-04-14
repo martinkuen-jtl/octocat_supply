@@ -32,7 +32,7 @@ export default function LoupeSettings() {
   const textMuted = darkMode ? 'text-gray-400' : 'text-gray-500';
   const cardBg = darkMode ? 'bg-gray-800' : 'bg-white';
   const labelClass = `block text-sm font-medium mb-1 ${textBase}`;
-  const valueClass = `ml-3 w-14 text-right text-sm font-mono ${darkMode ? 'text-primary' : 'text-primary'}`;
+  const valueClass = 'ml-3 w-14 text-right text-sm font-mono text-primary';
 
   return (
     <div className="pt-24 pb-12 px-4 max-w-xl mx-auto">

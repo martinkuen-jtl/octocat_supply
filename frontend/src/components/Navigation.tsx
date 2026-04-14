@@ -121,9 +121,7 @@ export default function Navigation() {
             <Link
               to="/loupe"
               aria-label="Loupe settings"
-              className={`p-1 rounded-md text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-primary ${
-                darkMode ? 'text-gray-400 hover:text-primary' : 'text-gray-400 hover:text-primary'
-              }`}
+              className="p-1 rounded-md text-xs text-gray-400 hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <svg
                 width="14"
