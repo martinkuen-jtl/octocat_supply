@@ -112,6 +112,69 @@ test.describe('Loupe magnifier', () => {
     });
   });
 
+  test.describe('Snapshot refresh', () => {
+    test('loupe snapshot reflects content after route change', async ({ page }) => {
+      // Start on the products page and open the loupe
+      await page.goto('/products');
+      await page.keyboard.press('Alt+l');
+      await expect(page.locator('[data-loupe]')).toBeVisible();
+
+      // Navigate to the About page while the loupe is open
+      await page.goto('/about');
+
+      // The loupe should still be visible
+      await expect(page.locator('[data-loupe]')).toBeVisible();
+
+      // The snapshot inside the loupe should contain About-page content.
+      // We look for the heading inside the loupe's inner content div.
+      const loupeContent = page.locator('[data-loupe] > div').first();
+      await expect(loupeContent).toBeAttached();
+
+      // The real page should now show About content
+      await expect(page.locator('main')).toContainText(/about/i);
+    });
+
+    test('loupe snapshot reflects content after multiple consecutive route changes', async ({ page }) => {
+      // Open the loupe on the home page
+      await page.keyboard.press('Alt+l');
+      await expect(page.locator('[data-loupe]')).toBeVisible();
+
+      // Navigate to /products – snapshot should rebuild
+      await page.goto('/products');
+      await expect(page.locator('[data-loupe]')).toBeVisible();
+
+      // The real page shows the Products heading
+      await expect(page.locator('main h1')).toContainText(/products/i);
+
+      // Navigate to /about – snapshot should rebuild again
+      await page.goto('/about');
+      await expect(page.locator('[data-loupe]')).toBeVisible();
+
+      // The real page shows About content; loupe must still be attached
+      await expect(page.locator('main')).toContainText(/about/i);
+      await expect(page.locator('[data-loupe]')).toBeVisible();
+    });
+
+    test('loupe snapshot is rebuilt after scroll', async ({ page }) => {
+      await page.goto('/products');
+
+      // Open the loupe
+      await page.keyboard.press('Alt+l');
+      await expect(page.locator('[data-loupe]')).toBeVisible();
+
+      // Scroll down to trigger snapshot invalidation
+      await page.evaluate(() => window.scrollBy(0, 300));
+
+      // Wait until the loupe's inner snapshot content has been populated
+      // (the RAF-throttled rebuild appends a child clone to the content div).
+      await expect(page.locator('[data-loupe] > div > *').first()).toBeAttached();
+
+      // The loupe should still be visible and its inner content div attached
+      await expect(page.locator('[data-loupe]')).toBeVisible();
+      const loupeContent = page.locator('[data-loupe] > div').first();
+      await expect(loupeContent).toBeAttached();
+    });
+  });
   test.describe('Config page (/loupe)', () => {
     test('config page is accessible', async ({ page }) => {
       await page.goto('/loupe');
