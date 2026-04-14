@@ -9,10 +9,13 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import AdminProducts from './components/admin/AdminProducts';
 import { useTheme } from './context/ThemeContext';
+import Loupe from './components/Loupe';
+import { useLoupeHotkey } from './hooks/useLoupeHotkey';
 
 // Wrapper component to apply theme classes
 function ThemedApp() {
   const { darkMode } = useTheme();
+  const loupeVisible = useLoupeHotkey();
 
   return (
     <Router>
@@ -30,6 +33,7 @@ function ThemedApp() {
           </Routes>
         </main>
         <Footer />
+        <Loupe visible={loupeVisible} />
       </div>
     </Router>
   );
