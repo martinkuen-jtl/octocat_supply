@@ -106,8 +106,6 @@ export default function Loupe({
   return (
     <div
       data-loupe
-      role="img"
-      aria-label="Magnifier loupe"
       aria-hidden="true"
       style={{
         position: 'fixed',
@@ -131,8 +129,8 @@ export default function Loupe({
         ref={lensContentRef}
         style={{
           position: 'absolute',
-          width: typeof window !== 'undefined' ? window.innerWidth : '100vw',
-          height: typeof window !== 'undefined' ? window.innerHeight : '100vh',
+          width: window.innerWidth,
+          height: window.innerHeight,
           transform: `scale(${zoom})`,
           pointerEvents: 'none',
         }}
